@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Guess the Word{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow">
+            <div class="card-header bg-info text-white">
+                <h4 class="mb-0">Player Dashboard</h4>
+            </div>
+            <div class="card-body text-center">
+                <h5>Welcome to Guess the Word Game!</h5>
+                <p class="lead">Try to guess the 5-letter word in 5 attempts or less</p>
+                
+                <div class="my-4">
+                    <h6>Today's Progress</h6>
+                    <p class="mb-2">Games played today: <strong>{{ games_today }}</strong> / 3</p>
+                    
+                    {% if can_play %}
+                        <a href="{{ url_for('play') }}" class="btn btn-primary btn-lg">
+                            Start New Game
+                        </a>
+                    {% else %}
+                        <div class="alert alert-warning">
+                            You have reached the maximum of 3 games per day. Come back tomorrow!
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <div class="mt-4">
+                    <h6>How to Play</h6>
+                    <ul class="list-unstyled text-start">
+                        <li class="mb-2">🟢 <strong>Green:</strong> Letter is correct and in the right position</li>
+                        <li class="mb-2">🟠 <strong>Orange:</strong> Letter is in the word but wrong position</li>
+                        <li class="mb-2">⚫ <strong>Grey:</strong> Letter is not in the word</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

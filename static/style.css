@@ -1,0 +1,89 @@
+body {
+    background-color: #f8f9fa;
+    min-height: 100vh;
+}
+
+.guess-row {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 10px;
+    gap: 5px;
+}
+
+.letter-box {
+    width: 60px;
+    height: 60px;
+    border: 2px solid #ddd;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    border-radius: 5px;
+    transition: all 0.3s ease;
+}
+
+.letter-box.correct {
+    background-color: #28a745;
+    color: white;
+    border-color: #28a745;
+}
+
+.letter-box.present {
+    background-color: #fd7e14;
+    color: white;
+    border-color: #fd7e14;
+}
+
+.letter-box.absent {
+    background-color: #6c757d;
+    color: white;
+    border-color: #6c757d;
+}
+
+#guess-input {
+    font-family: monospace;
+    font-size: 1.5rem;
+    letter-spacing: 0.2em;
+}
+
+.card {
+    border-radius: 10px;
+}
+
+.card-header {
+    border-radius: 10px 10px 0 0 !important;
+}
+
+.navbar-brand {
+    font-weight: bold;
+    font-size: 1.5rem;
+}
+
+.alert {
+    border-radius: 8px;
+}
+
+.table {
+    margin-top: 20px;
+}
+
+.report-section {
+    background-color: #f8f9fa;
+    padding: 20px;
+    border-radius: 8px;
+    margin-top: 20px;
+}
+
+@media (max-width: 768px) {
+    .letter-box {
+        width: 50px;
+        height: 50px;
+        font-size: 1.5rem;
+    }
+    
+    #guess-input {
+        font-size: 1.2rem;
+    }
+}

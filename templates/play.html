@@ -1,0 +1,171 @@
+{% extends "base.html" %}
+
+{% block title %}Play Game - Guess the Word{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">Guess the Word</h4>
+                <small>Attempt <span id="attempt-count">{{ attempts + 1 }}</span> of 5</small>
+            </div>
+            <div class="card-body">
+                <div id="guesses-container" class="mb-4">
+                    {% for guess in guesses %}
+                    <div class="guess-row">
+                        {% for letter_data in guess %}
+                        <div class="letter-box {{ letter_data.status }}">
+                            {{ letter_data.letter }}
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% endfor %}
+                </div>
+                
+                <div id="input-section">
+                    <form id="guess-form" class="mb-3">
+                        <div class="input-group input-group-lg">
+                            <input type="text" 
+                                   id="guess-input" 
+                                   class="form-control text-uppercase text-center" 
+                                   maxlength="5" 
+                                   placeholder="Enter 5-letter word"
+                                   autocomplete="off"
+                                   required>
+                            <button type="submit" class="btn btn-primary" id="submit-btn">
+                                Submit Guess
+                            </button>
+                        </div>
+                    </form>
+                    <small class="text-muted">Enter only uppercase letters (A-Z)</small>
+                </div>
+                
+                <div class="text-center mt-3">
+                    <a href="{{ url_for('dashboard') }}" class="btn btn-secondary">Back to Dashboard</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Success Modal -->
+<div class="modal fade" id="successModal" tabindex="-1" data-bs-backdrop="static">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-success text-white">
+                <h5 class="modal-title">🎉 Congratulations!</h5>
+            </div>
+            <div class="modal-body">
+                <p class="lead text-center">You guessed the word correctly!</p>
+                <p class="text-center">The word was: <strong id="correct-word"></strong></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success" onclick="window.location.href='{{ url_for('dashboard') }}'">OK</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Failure Modal -->
+<div class="modal fade" id="failureModal" tabindex="-1" data-bs-backdrop="static">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-warning">
+                <h5 class="modal-title">Better Luck Next Time!</h5>
+            </div>
+            <div class="modal-body">
+                <p class="lead text-center">You've used all 5 attempts.</p>
+                <p class="text-center">The correct word was: <strong id="failed-word"></strong></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-warning" onclick="window.location.href='{{ url_for('dashboard') }}'">OK</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.getElementById('guess-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    const input = document.getElementById('guess-input');
+    const guess = input.value.toUpperCase().trim();
+    
+    if (guess.length !== 5 || !/^[A-Z]+$/.test(guess)) {
+        alert('Please enter exactly 5 uppercase letters');
+        return;
+    }
+    
+    const submitBtn = document.getElementById('submit-btn');
+    submitBtn.disabled = true;
+    
+    try {
+        const response = await fetch('{{ url_for('submit_guess') }}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ guess: guess })
+        });
+        
+        const data = await response.json();
+        
+        if (data.error) {
+            alert(data.error);
+            submitBtn.disabled = false;
+            return;
+        }
+        
+        // Add guess to display
+        const guessRow = document.createElement('div');
+        guessRow.className = 'guess-row';
+        
+        data.result.forEach(letterData => {
+            const letterBox = document.createElement('div');
+            letterBox.className = `letter-box ${letterData.status}`;
+            letterBox.textContent = letterData.letter;
+            guessRow.appendChild(letterBox);
+        });
+        
+        document.getElementById('guesses-container').appendChild(guessRow);
+        
+        // Clear input
+        input.value = '';
+        
+        // Update attempt count
+        document.getElementById('attempt-count').textContent = data.attempts + 1;
+        
+        // Check if game is over
+        if (data.game_over) {
+            document.getElementById('input-section').style.display = 'none';
+            
+            if (data.is_correct) {
+                document.getElementById('correct-word').textContent = data.correct_word;
+                const successModal = new bootstrap.Modal(document.getElementById('successModal'));
+                successModal.show();
+            } else {
+                document.getElementById('failed-word').textContent = data.correct_word;
+                const failureModal = new bootstrap.Modal(document.getElementById('failureModal'));
+                failureModal.show();
+            }
+        } else {
+            submitBtn.disabled = false;
+            input.focus();
+        }
+        
+    } catch (error) {
+        console.error('Error:', error);
+        alert('An error occurred. Please try again.');
+        submitBtn.disabled = false;
+    }
+});
+
+// Auto-convert to uppercase
+document.getElementById('guess-input').addEventListener('input', (e) => {
+    e.target.value = e.target.value.toUpperCase();
+});
+</script>
+{% endblock %}

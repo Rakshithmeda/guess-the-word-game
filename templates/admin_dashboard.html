@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Dashboard - Guess the Word{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-10">
+        <div class="card shadow">
+            <div class="card-header bg-dark text-white">
+                <h4 class="mb-0">Admin Dashboard</h4>
+            </div>
+            <div class="card-body">
+                <h5 class="mb-4">Reports</h5>
+                
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <div class="card border-primary">
+                            <div class="card-header bg-primary text-white">
+                                <h6 class="mb-0">Daily Report</h6>
+                            </div>
+                            <div class="card-body">
+                                <p>View statistics for a specific day including number of users and correct guesses.</p>
+                                <a href="{{ url_for('daily_report') }}" class="btn btn-primary">View Daily Report</a>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6 mb-3">
+                        <div class="card border-success">
+                            <div class="card-header bg-success text-white">
+                                <h6 class="mb-0">User Report</h6>
+                            </div>
+                            <div class="card-body">
+                                <p>View detailed statistics for individual users including their game history.</p>
+                                <a href="{{ url_for('user_report') }}" class="btn btn-success">View User Report</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
